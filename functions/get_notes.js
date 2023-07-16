@@ -1,11 +1,10 @@
-const client = require('./utils/mongoClient');
+const { connectToDb, closeClient } = require('./utils/mongoClient');
 
 exports.handler =  async (event, context) => {
     try{
-        await client.connect();
-        const collection = client.db('notepal').collection('notes');
+        const collection =  await connectToDb('notes');
         const res =  await collection.find({}).toArray();
-        await client.close();
+        await closeClient();
         return {
             statusCode: 200,
             body: JSON.stringify(res)
