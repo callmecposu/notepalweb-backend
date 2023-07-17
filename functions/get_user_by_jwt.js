@@ -1,6 +1,15 @@
 const { createJWT, getUser } = require("./utils/jwt");
 
 exports.handler = async (event, context) => {
+  if (event.httpMethod === "OPTIONS") {
+    return {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
+    };
+  }
   try {
     const body = JSON.parse(event.body);
     const result = await getUser(body.token);
@@ -9,7 +18,10 @@ exports.handler = async (event, context) => {
   } catch (err) {
     return {
       statusCode: 400,
-      headers: { "Access-Control-Allow-Origin": "*" },
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
       message: err.toString(),
     };
   }

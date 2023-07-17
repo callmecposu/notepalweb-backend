@@ -11,7 +11,15 @@ const createJWT = (userID) => {
 const getUser = async (token) => {
   var userID;
   jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
-    if (err) return { statusCode: 400, body: err.toString() };
+    if (err)
+      return {
+        statusCode: 400,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "Content-Type",
+        },
+        body: JSON.stringify({ message: err.toString() }),
+      };
     else {
       userID = decodedToken.userID;
     }
@@ -21,14 +29,20 @@ const getUser = async (token) => {
   if (user) {
     return {
       statusCode: 200,
-      headers: { "Access-Control-Allow-Origin": "*" },
-      body: JSON.stringify(user),
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
+      body: JSON.stringify({ user: user }),
     };
   } else {
     return {
       statusCode: 400,
-      headers: { "Access-Control-Allow-Origin": "*" },
-      body: "Invalid JWT",
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
+      body: JSON.stringify({ message: "Invalid JWT" }),
     };
   }
 };
