@@ -16,9 +16,21 @@ const getUser = async (token) => {
       userID = decodedToken.userID;
     }
   });
-  const collection = await connectToDb('users');
-  const user = await collection.findOne({_id: new ObjectId(userID)});
-  return {statusCode:200, body: JSON.stringify(user)};
+  const collection = await connectToDb("users");
+  const user = await collection.findOne({ _id: new ObjectId(userID) });
+  if (user) {
+    return {
+      statusCode: 200,
+      headers: { "Access-Control-Allow-Origin": "*" },
+      body: JSON.stringify(user),
+    };
+  } else {
+    return {
+      statusCode: 400,
+      headers: { "Access-Control-Allow-Origin": "*" },
+      body: "Invalid JWT",
+    };
+  }
 };
 
 module.exports = { createJWT, getUser };

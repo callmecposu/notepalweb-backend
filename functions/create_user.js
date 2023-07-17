@@ -12,6 +12,7 @@ exports.handler = async (event, context) => {
       await closeClient();
       return {
         statusCode: 400,
+        headers: { "Access-Control-Allow-Origin": "*" },
         body: `Username "${body.username}" is already taken`,
       };
     }
@@ -26,9 +27,14 @@ exports.handler = async (event, context) => {
     const token = createJWT(result.insertedId);
     return {
       statusCode: 200,
+      headers: { "Access-Control-Allow-Origin": "*" },
       body: JSON.stringify({ user: result, token: token }),
     };
   } catch (err) {
-    return { statusCode: 400, body: err.toString() };
+    return {
+      statusCode: 400,
+      headers: { "Access-Control-Allow-Origin": "*" },
+      body: err.toString(),
+    };
   }
 };
