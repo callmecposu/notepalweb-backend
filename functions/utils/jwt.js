@@ -18,7 +18,6 @@ const getUser = async (token) => {
   });
   const collection = await connectToDb('users');
   const user = await collection.findOne({_id: new ObjectId(userID)});
-  console.log(user);
   return {statusCode:200, body: JSON.stringify(user)};
 };
 

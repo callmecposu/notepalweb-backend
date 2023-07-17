@@ -7,8 +7,8 @@ exports.handler = async (event, context) => {
   try {
     const collection = await connectToDb("users");
     // Check if user with such username already exists
-    const user = await collection.find({ username: body.username }).toArray();
-    if (user[0]) {
+    const user = await collection.findOne({ username: body.username });
+    if (user) {
       await closeClient();
       return {
         statusCode: 400,
