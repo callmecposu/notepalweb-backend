@@ -52,6 +52,6 @@ exports.handler = async (event, context) => {
       "Access-Control-Allow-Origin": "*",
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ token: token }),
+    body: JSON.stringify({ token: token , user: user}),
   };
 };
