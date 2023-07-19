@@ -27,7 +27,10 @@ exports.handler = async (event, context) => {
         "Access-Control-Allow-Origin": "*",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({message: `There is no user '${body.username}'`}),
+      body: JSON.stringify({
+        src: "username",
+        message: `There is no user '${body.username}'`,
+      }),
     };
   }
   // Compare given and stored passwords
@@ -40,7 +43,7 @@ exports.handler = async (event, context) => {
         "Access-Control-Allow-Origin": "*",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({message: `Invalid Password`}),
+      body: JSON.stringify({ src: "password", message: `Invalid Password` }),
     };
   }
   // Else create a JWT for a user
@@ -52,6 +55,6 @@ exports.handler = async (event, context) => {
       "Access-Control-Allow-Origin": "*",
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ token: token , user: user}),
+    body: JSON.stringify({ token: token, user: user }),
   };
 };
