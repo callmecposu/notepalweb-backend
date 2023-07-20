@@ -1,6 +1,7 @@
 const { createJWT, getUser } = require("./utils/jwt");
 
 exports.handler = async (event, context) => {
+  // preflight request handler
   if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,
