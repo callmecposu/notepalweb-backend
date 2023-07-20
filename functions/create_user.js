@@ -3,6 +3,16 @@ const { createJWT, getUser } = require("./utils/jwt");
 const bcrypt = require("bcrypt");
 
 exports.handler = async (event, context) => {
+  // handle preflight request
+  if (event.httpMethod === "OPTIONS") {
+    return {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
+    };
+  }
   const body = JSON.parse(event.body);
   try {
     const collection = await connectToDb("users");
@@ -12,8 +22,14 @@ exports.handler = async (event, context) => {
       await closeClient();
       return {
         statusCode: 400,
-        headers: { "Access-Control-Allow-Origin": "*" },
-        body: `Username "${body.username}" is already taken`,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "Content-Type",
+        },
+        body: JSON.stringify({
+          src: "username",
+          message: `Username "${body.username}" is already taken`,
+        }),
       };
     }
     // If no such user exists, hash the password and add the user to DB

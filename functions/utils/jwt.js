@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const { MongoClient } = require('mongodb');
 const { connectToDb, closeClient } = require("./mongoClient");
 const { ObjectId } = require("mongodb");
 
@@ -15,23 +16,25 @@ const getUser = async (token) => {
       return {
         statusCode: 400,
         headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Headers": "Content-Type",
-        },
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json",
+          },
         body: JSON.stringify({ message: err.toString() }),
       };
     else {
       userID = decodedToken.userID;
     }
   });
-  const collection = await connectToDb("users");
+  const client = new MongoClient(process.env.MONGODB_URI);
+  const collection = await connectToDb(client, "users");
   const user = await collection.findOne({ _id: new ObjectId(userID) });
+  await closeClient(client);
   if (user) {
     return {
       statusCode: 200,
       headers: {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type",
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ user: user }),
     };
@@ -40,7 +43,7 @@ const getUser = async (token) => {
       statusCode: 400,
       headers: {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type",
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ message: "Invalid JWT" }),
     };

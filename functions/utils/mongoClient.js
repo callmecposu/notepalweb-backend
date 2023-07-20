@@ -1,14 +1,14 @@
-const { MongoClient } = require('mongodb');
 require('dotenv').config();
 
-const client = new MongoClient(process.env.MONGODB_URI);
-
-const connectToDb =  async (collectionName) => {
+const connectToDb =  async (client, collectionName) => {
     return (await client.connect()).db('notepal').collection(collectionName);
 } 
 
-const closeClient = async () => {
+const closeClient = async (client) => {
+    console.log(`Closing client..`);
+    console.log(`Client status before: ${!!client.topology}`)
     await client.close();
+    console.log(`Client status after: ${!!client.topology}`)
 }
 
-module.exports = {connectToDb, closeClient};
+module.exports = { connectToDb, closeClient};

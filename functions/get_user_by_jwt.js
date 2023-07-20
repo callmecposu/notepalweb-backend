@@ -16,11 +16,12 @@ exports.handler = async (event, context) => {
     console.log(`result in the handler: ${result}`);
     return result;
   } catch (err) {
+    console.log(err);
     return {
       statusCode: 400,
       headers: {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type",
+        "Content-Type": "application/json",
       },
       message: err.toString(),
     };

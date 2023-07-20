@@ -1,5 +1,6 @@
 const { createJWT } = require("./utils/jwt");
-const { connectToDb, closeClient } = require("./utils/mongoClient");
+const { MongoClient } = require ("mongodb");
+const { client, connectToDb, closeClient } = require("./utils/mongoClient");
 const bcrypt = require("bcrypt");
 
 exports.handler = async (event, context) => {
@@ -15,12 +16,13 @@ exports.handler = async (event, context) => {
   }
   const body = JSON.parse(event.body);
   console.log(body);
+  const client = new MongoClient(process.env.MONGODB_URI);
   // Try to find a user with such username
-  const collection = await connectToDb("users");
+  const collection = await connectToDb(client, "users");
   const user = await collection.findOne({ username: body.username });
   console.log(`User "${body.username}" : ${user}`);
   if (!user) {
-    await closeClient();
+    await closeClient(client);
     return {
       statusCode: 400,
       headers: {
@@ -36,7 +38,7 @@ exports.handler = async (event, context) => {
   // Compare given and stored passwords
   const auth = await bcrypt.compare(body.password, user.password);
   if (!auth) {
-    await closeClient();
+    await closeClient(client);
     return {
       statusCode: 400,
       headers: {
@@ -48,7 +50,7 @@ exports.handler = async (event, context) => {
   }
   // Else create a JWT for a user
   const token = createJWT(user._id.toString());
-  await closeClient();
+  await closeClient(client);
   return {
     statusCode: 200,
     headers: {
