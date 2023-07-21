@@ -17,8 +17,9 @@ exports.handler = async (event, context) => {
   const client = new MongoClient(process.env.MONGODB_URI);
   const notesCol = await connectToDb(client, "notes");
   // Try find the note to import
+  var note;
   try {
-    const note = await notesCol.findOne({ _id: new ObjectId(body.noteID) });
+    note = await notesCol.findOne({ _id: new ObjectId(body.noteID) });
   } catch (err) {
     await closeClient(client);
     return {
@@ -45,7 +46,13 @@ exports.handler = async (event, context) => {
   const usersCol = await connectToDb(client, "users");
   const user = await usersCol.findOne({ username: body.username });
   var noteIDsUPD = user.noteIDs;
-  if (noteIDsUPD.includes(new ObjectId(body.noteID))) {
+  var includes = false;
+  noteIDsUPD.forEach(noteID => {
+    if (noteID.toString() == body.noteID){
+      includes = true;
+    }
+  });
+  if (includes) {
     await closeClient(client);
     return {
       statusCode: 400,
