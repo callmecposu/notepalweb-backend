@@ -17,7 +17,19 @@ exports.handler = async (event, context) => {
   const client = new MongoClient(process.env.MONGODB_URI);
   const notesCol = await connectToDb(client, "notes");
   // Try find the note to import
-  const note = await notesCol.findOne({ _id: new ObjectId(body.noteID) });
+  try {
+    const note = await notesCol.findOne({ _id: new ObjectId(body.noteID) });
+  } catch (err) {
+    await closeClient(client);
+    return {
+      statusCode: 400,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message: "There is no Note with such ID" }),
+    };
+  }
   if (!note) {
     await closeClient(client);
     return {
