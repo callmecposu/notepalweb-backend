@@ -22,14 +22,11 @@ exports.handler = async (event, context) => {
   const notesCol = await connectToDb(client, "notes");
   const notePromises = await user.noteIDs.map(async (noteID) => {
     const note = await notesCol.findOne({_id: noteID});
+    const owner = await usersCol.findOne({_id: note.ownerID});
+    note['ownerName'] = owner.username;
     return note;
   });
   const userNotes = await Promise.all(notePromises);
-  // user.noteIDs.forEach(async (noteID) => {
-  //   const note = await notesCol.findOne({ _id: noteID });
-  //   console.log(`Looping through notes: ${note}`);
-  //   userNotes.push(note);
-  // });
   await closeClient(client);
   return {
     statusCode: 200,
